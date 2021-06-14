@@ -1,11 +1,51 @@
-import Head from 'next/head'
 import styles from '../styles/Home.module.css'
+import {
+  Flex,
+  Spacer,
+  Heading,
+  Button,
+  Box,
+  HStack,
+  Input,
+  InputGroup,
+  IconButton,
+  InputLeftElement,
+  InputRightElement,
+} from "@chakra-ui/react"
+import { SearchIcon } from "@chakra-ui/icons"
 
 export default function Home({ podcasts }) {
   return (
     <div className={styles.container}>
 
       <main className={styles.main}>
+
+        <Flex>
+          <Box p="2">
+            <Heading size="lg">Podlr</Heading>
+          </Box>
+          <Spacer />
+
+          <HStack spacing="20px">
+            <Button colorScheme="blackAlpha" variant="link" size='md'>
+              Podcasts
+            </Button>
+            <Button colorScheme="blackAlpha" variant="link" size='md'>
+              Lists
+            </Button>
+            <Button colorScheme="blue" variant="link" size="md">
+              Login
+            </Button>
+            <Button colorScheme="blue" variant="link" size="md">
+              Register Account
+            </Button>
+            <InputGroup size="sm" variant="outline" width='150px' >
+              <Input rounded='20px' />
+              <InputRightElement children={<SearchIcon  color="blue.500" />} />
+            </InputGroup>
+
+          </HStack>
+        </Flex>
 
         <div className={styles.grid}>
           {podcasts.map(podcast => (
