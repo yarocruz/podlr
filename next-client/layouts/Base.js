@@ -46,25 +46,46 @@ const Base = (props) => {
                     <Spacer />
 
                     <HStack spacing="20px">
-                        <Button colorScheme="blackAlpha" variant="link" size='md'>
-                            Podcasts
-                        </Button>
-                        <Button colorScheme="blackAlpha" variant="link" size='md'>
-                            Lists
-                        </Button>
+
 
                         {props.auththenticated ? (
-                            <Button onClick={() => logout()} colorScheme="blue" variant="link" size="md">
-                                Logout
-                            </Button>
+                            <>
+                                <Link href='profile'>
+                                    <Button colorScheme="blackAlpha" variant="link" size='md'>
+                                        Profile
+                                    </Button>
+                                </Link>
+                                <Link href='podcasts'>
+                                    <Button colorScheme="blackAlpha" variant="link" size='md'>
+                                        Podcasts
+                                    </Button>
+                                </Link>
+                                <Link href='lists'>
+                                    <Button colorScheme="blackAlpha" variant="link" size='md'>
+                                        Lists
+                                    </Button>
+                                </Link>
+                                <Button onClick={() => logout()} colorScheme="blue" variant="link" size="md">
+                                    Logout
+                                </Button>
+                            </>
                         ) : (
                             <>
+                                <Link href='podcasts'>
+                                    <Button colorScheme="blackAlpha" variant="link" size='md'>
+                                        Podcasts
+                                    </Button>
+                                </Link>
+                                <Link href='lists'>
+                                    <Button colorScheme="blackAlpha" variant="link" size='md'>
+                                        Lists
+                                    </Button>
+                                </Link>
                                 <Link href='/login'>
                                     <Button colorScheme="blue" variant="link" size="md">
                                         Login
                                     </Button>
                                 </Link>
-
                                 <Link href='/register'>
                                     <Button colorScheme="blue" variant="link" size="md">
                                         Register Account

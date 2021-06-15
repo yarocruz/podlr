@@ -1,6 +1,7 @@
 import {useState } from "react";
 import Base from "../layouts/Base";
 import { useRouter } from "next/router";
+import ErrorMessage from "../components/ErrorMessage";
 
 import {
     Flex,
@@ -14,8 +15,9 @@ import {
     Text,
     InputGroup,
     InputRightElement,
-    Icon
+    Center
 } from '@chakra-ui/react';
+import {ViewIcon, ViewOffIcon} from '@chakra-ui/icons'
 
 export default function Login(){
     const [email, setEmail] = useState('');
@@ -32,8 +34,9 @@ export default function Login(){
 
         setIsLoading(true);
 
+
         try {
-            await fetch('http://localhost:8000/login', {
+            const response = await fetch('http://localhost:8000/login', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 credentials: 'include',
@@ -43,13 +46,25 @@ export default function Login(){
                 })
             })
 
-            await router.push('/')
+            if (response.status === 403) {
 
-            setIsLoggedIn(true);
-            setIsLoading(false);
-            setShowPassword(false);
+                setError('Invalid username or password');
+                setIsLoading(false);
+
+                await router.push('/login')
+
+            } else {
+                setEmail('');
+                setPassword('');
+
+                setIsLoggedIn(true);
+                setIsLoading(false);
+                setShowPassword(false);
+
+                await router.push('/')
+            }
         } catch (error) {
-            setError('Invalid username or password');
+            console.log(error)
             setIsLoading(false);
             setEmail('');
             setPassword('');
@@ -61,89 +76,76 @@ export default function Login(){
 
     return (
         <Base>
+            <Center height='100vh'>
             <Flex width="full" align="center" justifyContent="center">
                 <Box
                     p={8}
                     maxWidth="500px"
                     borderWidth={1}
                     borderRadius={8}
-                    boxShadow="lg"
+                    boxShadow="md"
                 >
-                    {isLoggedIn ? (
-                        <Box textAlign="center">
-                            <Text>{email} logged in!</Text>
+                    <Box textAlign="center">
+                        <Heading>Login</Heading>
+                    </Box>
+                    <Box my={4} textAlign="left">
+                        <form onSubmit={handleSubmit}>
+                            {error && <ErrorMessage message={error} />}
+                            <FormControl isRequired>
+                                <FormLabel>Email</FormLabel>
+                                <Input
+                                    type="email"
+                                    placeholder="test@test.com"
+                                    size="lg"
+                                    onChange={event => setEmail(event.currentTarget.value)}
+                                />
+                            </FormControl>
+                            <FormControl isRequired mt={6}>
+                                <FormLabel>Password</FormLabel>
+                                <InputGroup>
+                                    <Input
+                                        type={showPassword ? 'text' : 'password'}
+                                        placeholder="*******"
+                                        size="lg"
+                                        onChange={event => setPassword(event.currentTarget.value)}
+                                    />
+                                    <InputRightElement width="3rem">
+                                        <Button
+                                            h='1.5rem'
+                                            size="sm"
+                                            onClick={handlePasswordVisibility}
+                                        >
+                                            {showPassword ? (
+                                                <ViewIcon name="view-off" />
+                                            ) : (
+                                                <ViewOffIcon name="view" />
+                                            )}
+                                        </Button>
+                                    </InputRightElement>
+                                </InputGroup>
+                            </FormControl>
                             <Button
                                 variant="outline"
+                                type="submit"
                                 width="full"
                                 mt={4}
-                                onClick={() => setIsLoggedIn(false)}
                             >
-                                Sign out
+                                {isLoading ? (
+                                    <CircularProgress
+                                        isIndeterminate
+                                        size="24px"
+                                        color="teal"
+                                    />
+                                ) : (
+                                    'Sign In'
+                                )}
                             </Button>
-                        </Box>
-                    ) : (
-                        <>
-                            <Box textAlign="center">
-                                <Heading>Login</Heading>
-                            </Box>
-                            <Box my={4} textAlign="left">
-                                <form onSubmit={handleSubmit}>
-                                    {error && <ErrorMessage message={error} />}
-                                    <FormControl isRequired>
-                                        <FormLabel>Email</FormLabel>
-                                        <Input
-                                            type="email"
-                                            placeholder="test@test.com"
-                                            size="lg"
-                                            onChange={event => setEmail(event.currentTarget.value)}
-                                        />
-                                    </FormControl>
-                                    <FormControl isRequired mt={6}>
-                                        <FormLabel>Password</FormLabel>
-                                        <InputGroup>
-                                            <Input
-                                                type={showPassword ? 'text' : 'password'}
-                                                placeholder="*******"
-                                                size="lg"
-                                                onChange={event => setPassword(event.currentTarget.value)}
-                                            />
-                                            <InputRightElement width="3rem">
-                                                <Button
-                                                    h="1.5rem"
-                                                    size="sm"
-                                                    onClick={handlePasswordVisibility}
-                                                >
-                                                    {showPassword ? (
-                                                        <Icon name="view-off" />
-                                                    ) : (
-                                                        <Icon name="view" />
-                                                    )}
-                                                </Button>
-                                            </InputRightElement>
-                                        </InputGroup>
-                                    </FormControl>
-                                    <Button
-                                        variant="outline"
-                                        type="submit"
-                                        width="full"
-                                        mt={4}
-                                    >
-                                        {isLoading ? (
-                                            <CircularProgress
-                                                isIndeterminate
-                                                size="24px"
-                                                color="teal"
-                                            />
-                                        ) : (
-                                            'Sign In'
-                                        )}
-                                    </Button>
-                                </form>
-                            </Box>
-                        </>
-                    )}
+                        </form>
+                    </Box>
+
                 </Box>
             </Flex>
+            </Center>
         </Base>
     )
 }
