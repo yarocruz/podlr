@@ -1,86 +1,50 @@
-import styles from '../styles/Home.module.css'
-import {
-  Flex,
-  Spacer,
-  Heading,
-  Button,
-  Box,
-  HStack,
-  Input,
-  InputGroup,
-  IconButton,
-  InputLeftElement,
-  InputRightElement,
-} from "@chakra-ui/react"
-import { SearchIcon } from "@chakra-ui/icons"
+import Base from "../layouts/Base";
+import { useEffect, useState } from "react";
 
-export default function Home({ podcasts }) {
+export default function Home() {
+    const [auth, setAuth] = useState(false)
+    const [message, setMessage] = useState('')
+
+   useEffect(() => {
+       (
+           async () => {
+               try {
+                   const response = await fetch('http://localhost:8000/user', {
+                       credentials: 'include',
+                   });
+
+                   const content = await response.json();
+                   console.log(content)
+
+                   if (content.name) {
+                       setMessage(`Hi ${content.name}`)
+                       setAuth(true);
+                   }
+
+               } catch (e) {
+                   console.log(e.message)
+                   setAuth(false)
+                   setMessage('You are not logged in')
+               }
+           }
+       )();
+   });
+
   return (
-    <div className={styles.container}>
-
-      <main className={styles.main}>
-
-        <Flex>
-          <Box p="2">
-            <Heading size="lg">Podlr</Heading>
-          </Box>
-          <Spacer />
-
-          <HStack spacing="20px">
-            <Button colorScheme="blackAlpha" variant="link" size='md'>
-              Podcasts
-            </Button>
-            <Button colorScheme="blackAlpha" variant="link" size='md'>
-              Lists
-            </Button>
-            <Button colorScheme="blue" variant="link" size="md">
-              Login
-            </Button>
-            <Button colorScheme="blue" variant="link" size="md">
-              Register Account
-            </Button>
-            <InputGroup size="sm" variant="outline" width='150px' >
-              <Input rounded='20px' />
-              <InputRightElement children={<SearchIcon  color="blue.500" />} />
-            </InputGroup>
-
-          </HStack>
-        </Flex>
-
-        <div className={styles.grid}>
-          {podcasts.map(podcast => (
-              <a key={podcast.id} href={podcast.link} className={styles.card}>
-                <img src={podcast.image} alt="podcast logo and branding"/>
-                <h3>{podcast.title}</h3>
-                <p>{podcast.description}</p>
-              </a>
-          ))}
-
-
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Run by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
-    </div>
+      <Base auththenticated={auth}>
+          {message}
+      </Base>
   )
 }
 
-export async function getStaticProps() {
-  const res = await fetch('http://127.0.0.1:8000/api/podcast/')
-  const podcasts = await res.json()
+// export async function getStaticProps() {
+//     const res = await fetch('http://127.0.0.1:8000/api/podcast/')
+//     const podcasts = await res.json()
+//
+//     return {
+//         props: {
+//             podcasts
+//         }
+//     }
+// }
 
-  return {
-    props: {
-      podcasts
-    }
-  }
-}
